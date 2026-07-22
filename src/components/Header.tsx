@@ -46,10 +46,6 @@ export const Header: React.FC<HeaderProps> = ({
     onUpdateSettings({ theme: nextTheme });
   };
 
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onUpdateSettings({ language: e.target.value as LanguageCode });
-  };
-
   return (
     <header className="sticky top-0 z-30 bg-[#FDFCF8]/90 dark:bg-[#1C1E1C]/90 backdrop-blur-md border-b border-[#E8E2D2] dark:border-[#353B35] px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 transition-colors">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
@@ -95,10 +91,10 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right Action Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* License Status Badge */}
+          {/* License Status Badge - Hide on mobile */}
           <button
             onClick={onOpenLicenseModal}
-            className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-all ${
+            className={`hidden md:flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-all ${
               !license || !license.isValid
                 ? 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
                 : license.isInGracePeriod
@@ -128,16 +124,6 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </button>
 
-          {/* Language Selector */}
-          <select
-            value={settings.language}
-            onChange={handleLanguageChange}
-            className="text-xs font-medium bg-[#F5F2EA] dark:bg-[#2D322D] border border-[#E8E2D2] dark:border-[#353B35] text-[#2D2A26] dark:text-[#EAE7DF] rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#5A6D5B]"
-          >
-            <option value="en">English</option>
-            <option value="zh">中文</option>
-          </select>
-
           {/* Theme Switcher */}
           <button
             onClick={toggleTheme}
@@ -151,11 +137,11 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </button>
 
-          {/* Security PIN Lock button */}
+          {/* Security PIN Lock button - Hide on mobile */}
           {settings.securityEnabled && (
             <button
               onClick={onLockApp}
-              className="p-1.5 rounded-lg text-[#7C776B] dark:text-[#A09886] hover:bg-[#F5F2EA] dark:hover:bg-[#2D322D] transition-colors"
+              className="hidden md:block p-1.5 rounded-lg text-[#7C776B] dark:text-[#A09886] hover:bg-[#F5F2EA] dark:hover:bg-[#2D322D] transition-colors"
               title="Lock App Screen"
             >
               <Lock className="w-4 h-4 text-[#5A6D5B] dark:text-[#A3B5A4]" />

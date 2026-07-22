@@ -2,7 +2,7 @@
  * Core Data Models for Offline Knowledge Training Platform
  */
 
-export type LicenseType = 'USER' | 'ADMIN';
+export type LicenseType = 'USER' | 'ADMIN' | 'VIP';
 
 export interface LicensePayload {
   licenseId: string;

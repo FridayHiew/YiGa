@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
-import { GeneratedLicenseRecord, LicenseType } from '../types';
+import { GeneratedLicenseRecord, LicenseType, AppSettings } from '../types';
 import { generateLicenseKey } from '../utils/crypto';
+import { getTranslation } from '../utils/i18n';
 import { KeyRound, Copy, Check, Download, ShieldCheck, Sparkles, Clock, AlertCircle } from 'lucide-react';
 
 interface AdminLicenseGeneratorViewProps {
   currentDeviceId: string;
+  settings: AppSettings;
 }
 
 export const AdminLicenseGeneratorView: React.FC<AdminLicenseGeneratorViewProps> = ({
   currentDeviceId,
+  settings,
 }) => {
+  const lang = settings.language;
+  const t = (key: any) => getTranslation(lang, key);
   const [targetDeviceId, setTargetDeviceId] = useState(currentDeviceId);
   const [licenseType, setLicenseType] = useState<LicenseType>('USER');
-  const [durationMonths, setDurationMonths] = useState(6);
+  const [durationMonths, setDurationMonths] = useState(3);
   const [holderName, setHolderName] = useState('Authorized Learner');
 
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
@@ -56,14 +61,14 @@ export const AdminLicenseGeneratorView: React.FC<AdminLicenseGeneratorViewProps>
       <div>
         <div className="flex items-center gap-2 mb-1">
           <span className="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold text-[10px] uppercase tracking-wider border border-purple-200 dark:border-purple-800">
-            Admin License Tool
+            {t('adminTool')}
           </span>
         </div>
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-          RSA Digital License Key Generator
+          {t('licenseGenerator')}
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Generate signed offline license activation keys bound to target Device IDs
+          {t('generateSignedKeys')}
         </p>
       </div>
 
@@ -72,13 +77,13 @@ export const AdminLicenseGeneratorView: React.FC<AdminLicenseGeneratorViewProps>
         <div className="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
             <KeyRound className="w-4 h-4 text-purple-600" />
-            <span>Generate New Signed License Key</span>
+            <span>{t('licenseGenerator')}</span>
           </h3>
 
           <form onSubmit={handleGenerate} className="space-y-4 text-xs">
             <div>
               <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                Target Device ID *
+                {t('targetDeviceId')}
               </label>
               <div className="flex items-center gap-2">
                 <input
@@ -94,7 +99,7 @@ export const AdminLicenseGeneratorView: React.FC<AdminLicenseGeneratorViewProps>
                   onClick={() => setTargetDeviceId(currentDeviceId)}
                   className="px-3 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold rounded-xl text-[11px] whitespace-nowrap hover:bg-slate-200"
                 >
-                  My Device
+                  {t('myDevice')}
                 </button>
               </div>
             </div>
@@ -103,8 +108,8 @@ export const AdminLicenseGeneratorView: React.FC<AdminLicenseGeneratorViewProps>
               <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">
                 License Type
               </label>
-              <div className="grid grid-cols-2 gap-2">
-                {(['USER', 'ADMIN'] as LicenseType[]).map((type) => (
+              <div className="grid grid-cols-3 gap-2">
+                {(['USER', 'ADMIN', 'VIP'] as LicenseType[]).map((type) => (
                   <button
                     key={type}
                     type="button"

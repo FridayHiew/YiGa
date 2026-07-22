@@ -26,6 +26,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     quotaMB: 'Calculated by browser',
     isIndexedDBSupported: true,
   });
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [resetCompleted, setResetCompleted] = useState(false);
 
   useEffect(() => {
     getStorageUsageInfo().then(setStorageInfo);
@@ -239,21 +241,64 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           {lang === 'zh' ? '本地存储与数据管理' : 'Local Storage & Data Management'}
         </h3>
 
-        <div className="flex items-center justify-between text-xs">
-          <div>
-            <span className="font-bold text-[#2D2A26] dark:text-[#EAE7DF] block">
-              {getTranslation(lang, 'clearData')}
-            </span>
-            <span className="text-[#7C776B] dark:text-[#A09886]">
-              {lang === 'zh' ? '清空所有答题记录，并将知识库恢复为初始状态。' : 'Clears study history and resets question collections to initial state.'}
-            </span>
+        <div className="space-y-4 text-xs">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="font-bold text-[#2D2A26] dark:text-[#EAE7DF] block">
+                {getTranslation(lang, 'clearData')}
+              </span>
+              <span className="text-[#7C776B] dark:text-[#A09886]">
+                {lang === 'zh' ? '清空所有答题记录，并将知识库恢复为初始状态。' : 'Clears study history and resets question collections to initial state.'}
+              </span>
+            </div>
           </div>
-          <button
-            onClick={onResetData}
-            className="px-4 py-2 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-xl font-bold text-xs hover:bg-rose-100 transition-colors"
-          >
-            {getTranslation(lang, 'clearData')}
-          </button>
+
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+            {!showResetConfirm ? (
+              <div className="flex justify-end">
+                <button
+                  onClick={() => {
+                    setResetCompleted(false);
+                    setShowResetConfirm(true);
+                  }}
+                  className="px-4 py-2 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-xl font-bold text-xs hover:bg-rose-100 transition-colors shadow-sm"
+                >
+                  {getTranslation(lang, 'clearData')}
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-end gap-3 w-full">
+                <div className="p-3 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-100 dark:border-rose-900 rounded-xl w-full text-xs font-semibold">
+                  ⚠️ {getTranslation(lang, 'confirmResetDesc')}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={async () => {
+                      await onResetData();
+                      setShowResetConfirm(false);
+                      setResetCompleted(true);
+                      setTimeout(() => setResetCompleted(false), 5000);
+                    }}
+                    className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-xs transition-colors shadow-sm"
+                  >
+                    {getTranslation(lang, 'yesReset')}
+                  </button>
+                  <button
+                    onClick={() => setShowResetConfirm(false)}
+                    className="px-4 py-2 bg-[#F5F2EA] dark:bg-[#2D322D] border border-[#E8E2D2] dark:border-[#353B35] text-[#2D2A26] dark:text-[#EAE7DF] rounded-xl font-bold text-xs hover:bg-[#EAE5D8] transition-colors"
+                  >
+                    {getTranslation(lang, 'cancel')}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {resetCompleted && (
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900 rounded-xl text-xs font-semibold animate-pulse">
+              ✨ {getTranslation(lang, 'resetSuccess')}
+            </div>
+          )}
         </div>
       </div>
     </div>

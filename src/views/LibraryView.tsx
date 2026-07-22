@@ -153,13 +153,6 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#5A6D5B] hover:bg-[#485749] text-white font-semibold text-xs transition-all shadow-sm"
-          >
-            <Plus className="w-4 h-4" />
-            <span>{getTranslation(lang, 'createNewCollection')}</span>
-          </button>
-          <button
             onClick={() => onNavigateTab('import')}
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F5F2EA] dark:bg-[#2D322D] hover:bg-[#EAE5D8] text-[#2D2A26] dark:text-[#EAE7DF] font-semibold text-xs transition-colors border border-[#E8E2D2] dark:border-[#353B35]"
           >

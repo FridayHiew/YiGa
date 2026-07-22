@@ -53,8 +53,13 @@ export function generateLicenseKey(
   const now = new Date();
   const issuedAt = now.toISOString();
   
+  // VIP = No Expiry (e.g., 100 years from now)
   const expiry = new Date(now);
-  expiry.setMonth(expiry.getMonth() + durationMonths);
+  if (licenseType === 'VIP') {
+    expiry.setFullYear(expiry.getFullYear() + 100);
+  } else {
+    expiry.setMonth(expiry.getMonth() + durationMonths);
+  }
   const expiresAt = expiry.toISOString();
 
   const licenseId = `LIC-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;

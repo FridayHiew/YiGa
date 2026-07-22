@@ -66,8 +66,13 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
       {/* Main Center Branding & Logo */}
       <div className="flex flex-col items-center text-center my-auto max-w-md w-full px-4 animate-fade-in">
-        {/* Animated Bagua Logo Container with Pulsing Glow */}
-        <div className="relative mb-5 group">
+        {/* 1. Chinese Name */}
+        <h1 className="text-3xl sm:text-4xl font-extrabold font-serif tracking-widest text-[#3E4A3E] dark:text-[#F5F2EA] mb-6">
+          易阁
+        </h1>
+
+        {/* 2. Animated Bagua Logo Container with Pulsing Glow */}
+        <div className="relative mb-6 group">
           {/* Subtle Rotating Halo Ring */}
           <div className="absolute -inset-3 rounded-full bg-gradient-to-r from-[#C5A059]/20 via-[#5A6D5B]/25 to-[#C5A059]/20 blur-lg opacity-75 animate-pulse" />
           <div className="relative p-2.5 rounded-2xl bg-white/90 dark:bg-[#242824]/90 shadow-md border border-[#E8E2D2] dark:border-[#353B35]">
@@ -75,13 +80,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           </div>
         </div>
 
-        {/* Application Name (易阁 / YiGa) */}
-        <h1 className="text-2xl sm:text-3xl font-extrabold font-serif tracking-tight text-[#3E4A3E] dark:text-[#F5F2EA] flex items-center justify-center gap-2">
-          <span>易阁</span>
-          <span className="text-base font-normal text-[#C5A059] font-sans px-2 py-0.5 rounded-lg bg-[#5A6D5B]/10 dark:bg-[#708571]/20">
+        {/* 3. English Name */}
+        <div className="mb-6">
+          <span className="text-base sm:text-lg font-bold tracking-widest text-[#C5A059] font-sans px-3 py-1 rounded-xl bg-[#5A6D5B]/10 dark:bg-[#708571]/20 border border-[#E8E2D2]/40 dark:border-[#353B35]/40">
             YiGa
           </span>
-        </h1>
+        </div>
 
         {/* Official Slogan */}
         <div className="mt-3.5 p-3.5 rounded-2xl bg-[#F5F2EA]/80 dark:bg-[#282C28]/80 border border-[#E8E2D2] dark:border-[#353B35] shadow-sm max-w-xs w-full">

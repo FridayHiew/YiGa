@@ -114,6 +114,16 @@ export default function App() {
     saveAppState(updated);
   };
 
+  // Handler: Delete Current License
+  const handleDeleteLicense = () => {
+    const updated: AppStorageState = {
+      ...appState,
+      license: null,
+    };
+    setAppState(updated);
+    saveAppState(updated);
+  };
+
   // Handler: Start Quiz
   const handleStartQuiz = (config: QuizConfig) => {
     // Check license requirement
@@ -142,12 +152,9 @@ export default function App() {
 
   // Handler: Reset All Data
   const handleResetData = async () => {
-    if (confirm('Are you sure you want to reset all data and clear study history?')) {
-      await resetAppState();
-      const fresh = loadAppState();
-      setAppState(fresh);
-      alert('Local IndexedDB & storage successfully reset to default state.');
-    }
+    await resetAppState();
+    const fresh = loadAppState();
+    setAppState(fresh);
   };
 
   const isAdmin = appState.license?.payload.licenseType === 'ADMIN';
@@ -242,6 +249,7 @@ export default function App() {
             {activeTab === 'admin' && (
               <AdminLicenseGeneratorView
                 currentDeviceId={appState.deviceId}
+                settings={appState.settings}
               />
             )}
 
@@ -281,6 +289,7 @@ export default function App() {
               currentLicense={appState.license}
               settings={appState.settings}
               onActivateLicense={handleActivateLicense}
+              onDeleteLicense={handleDeleteLicense}
               onCloseModal={() => setShowLicenseModal(false)}
               isModalView
             />

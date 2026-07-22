@@ -252,6 +252,111 @@ Strictly output ONLY a single raw JSON object (no markdown formatting, no code b
         </label>
       </div>
 
+      {/* Pre-Import Validation & Preview Report */}
+      {report && (
+        <div className="p-6 bg-white dark:bg-[#242824] border border-[#E8E2D2] dark:border-[#353B35] rounded-2xl space-y-6 shadow-sm">
+          <div className="flex items-center justify-between border-b border-[#E8E2D2] dark:border-[#353B35] pb-4">
+            <div>
+              <h3 className="font-bold text-base text-[#3E4A3E] dark:text-[#F5F2EA] font-serif">
+                {lang === 'zh' ? '导入前数据校验报告' : 'Pre-Import Validation Report'}
+              </h3>
+              <p className="text-xs text-[#7C776B] dark:text-[#A09886]">
+                {lang === 'zh' ? '题库集合：' : 'Collection:'} <span className="font-bold text-[#2D2A26] dark:text-[#EAE7DF]">{report.collectionName}</span>
+              </p>
+            </div>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-bold ${
+                report.isValid
+                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200'
+                  : 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200'
+              }`}
+            >
+              {report.isValid
+                ? (lang === 'zh' ? '校验通过' : 'Validation Passed')
+                : (lang === 'zh' ? '校验失败' : 'Validation Failed')}
+            </span>
+          </div>
+
+          {/* Metrics summary */}
+          <div className="grid grid-cols-3 gap-3 text-center text-xs">
+            <div className="p-3 rounded-xl bg-[#F5F2EA] dark:bg-[#2D322D]">
+              <span className="text-[#7C776B] dark:text-[#A09886] block text-[10px]">
+                {lang === 'zh' ? '解析总数' : 'Total Parsed'}
+              </span>
+              <span className="font-bold text-[#2D2A26] dark:text-[#EAE7DF] text-sm">{report.totalRows}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40">
+              <span className="text-emerald-600 dark:text-emerald-400 block text-[10px]">
+                {lang === 'zh' ? '有效题目' : 'Valid Questions'}
+              </span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-300 text-sm">{report.validRows}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40">
+              <span className="text-rose-600 dark:text-rose-400 block text-[10px]">
+                {lang === 'zh' ? '跳过 / 无效' : 'Skipped / Invalid'}
+              </span>
+              <span className="font-bold text-rose-700 dark:text-rose-300 text-sm">{report.invalidRows}</span>
+            </div>
+          </div>
+
+          {/* Validation Errors/Warnings if any */}
+          {report.errors.length > 0 && (
+            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 text-rose-700 dark:text-rose-300 text-xs space-y-1">
+              <span className="font-bold block">{lang === 'zh' ? '校验错误说明：' : 'Validation Errors:'}</span>
+              {report.errors.map((err, idx) => (
+                <p key={idx} className="text-[11px]">
+                  • {lang === 'zh' ? `第 ${err.row} 行 [${err.field}]: ${err.message}` : `Row ${err.row} [${err.field}]: ${err.message}`}
+                </p>
+              ))}
+            </div>
+          )}
+
+          {/* Duplicate Conflict Strategy Selector */}
+          <div className="p-4 bg-[#F5F2EA] dark:bg-[#2D322D] rounded-xl border border-[#E8E2D2] dark:border-[#353B35]">
+            <label className="text-xs font-bold text-[#2D2A26] dark:text-[#EAE7DF] block mb-2">
+              {lang === 'zh' ? '若集合或题目 ID 已存在：' : 'If Collection or Question ID Exists:'}
+            </label>
+            <div className="grid grid-cols-3 gap-2 text-xs">
+              {[
+                { id: 'IMPORT_NEW', label: lang === 'zh' ? '导入为新题库' : 'Import as New' },
+                { id: 'OVERWRITE', label: lang === 'zh' ? '覆盖现有题库' : 'Overwrite Existing' },
+                { id: 'SKIP', label: lang === 'zh' ? '跳过重复项' : 'Skip Duplicates' },
+              ].map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setConflictStrategy(opt.id as any)}
+                  className={`py-2 px-3 rounded-lg font-semibold border transition-all ${
+                    conflictStrategy === opt.id
+                      ? 'bg-[#5A6D5B] text-white border-[#5A6D5B] shadow-sm'
+                      : 'bg-white dark:bg-[#242824] border-[#E8E2D2] dark:border-[#353B35] text-[#2D2A26] dark:text-[#EAE7DF]'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Confirm Button */}
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button
+              onClick={() => setReport(null)}
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-[#7C776B] hover:bg-[#F5F2EA] dark:hover:bg-[#2D322D]"
+            >
+              {lang === 'zh' ? '取消' : 'Discard'}
+            </button>
+            <button
+              disabled={!report.isValid || report.extractedQuestions.length === 0}
+              onClick={handleConfirmImport}
+              className="px-5 py-2.5 rounded-xl bg-[#5A6D5B] hover:bg-[#485749] text-white font-semibold text-xs transition-all shadow-sm disabled:opacity-50"
+            >
+              {lang === 'zh' ? '确认并保存至本地数据库' : 'Confirm & Save to Local Database'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* AI Prompt Template Section (Before Starter Template Section) */}
       <div className="p-5 bg-white dark:bg-[#242824] rounded-2xl border border-[#E8E2D2] dark:border-[#353B35] shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -374,110 +479,6 @@ Strictly output ONLY a single raw JSON object (no markdown formatting, no code b
         </div>
       )}
 
-      {/* Pre-Import Validation & Preview Report */}
-      {report && (
-        <div className="p-6 bg-white dark:bg-[#242824] border border-[#E8E2D2] dark:border-[#353B35] rounded-2xl space-y-6 shadow-sm">
-          <div className="flex items-center justify-between border-b border-[#E8E2D2] dark:border-[#353B35] pb-4">
-            <div>
-              <h3 className="font-bold text-base text-[#3E4A3E] dark:text-[#F5F2EA] font-serif">
-                {lang === 'zh' ? '导入前数据校验报告' : 'Pre-Import Validation Report'}
-              </h3>
-              <p className="text-xs text-[#7C776B] dark:text-[#A09886]">
-                {lang === 'zh' ? '题库集合：' : 'Collection:'} <span className="font-bold text-[#2D2A26] dark:text-[#EAE7DF]">{report.collectionName}</span>
-              </p>
-            </div>
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-bold ${
-                report.isValid
-                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200'
-                  : 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200'
-              }`}
-            >
-              {report.isValid
-                ? (lang === 'zh' ? '校验通过' : 'Validation Passed')
-                : (lang === 'zh' ? '校验失败' : 'Validation Failed')}
-            </span>
-          </div>
-
-          {/* Metrics summary */}
-          <div className="grid grid-cols-3 gap-3 text-center text-xs">
-            <div className="p-3 rounded-xl bg-[#F5F2EA] dark:bg-[#2D322D]">
-              <span className="text-[#7C776B] dark:text-[#A09886] block text-[10px]">
-                {lang === 'zh' ? '解析总数' : 'Total Parsed'}
-              </span>
-              <span className="font-bold text-[#2D2A26] dark:text-[#EAE7DF] text-sm">{report.totalRows}</span>
-            </div>
-            <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40">
-              <span className="text-emerald-600 dark:text-emerald-400 block text-[10px]">
-                {lang === 'zh' ? '有效题目' : 'Valid Questions'}
-              </span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-300 text-sm">{report.validRows}</span>
-            </div>
-            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40">
-              <span className="text-rose-600 dark:text-rose-400 block text-[10px]">
-                {lang === 'zh' ? '跳过 / 无效' : 'Skipped / Invalid'}
-              </span>
-              <span className="font-bold text-rose-700 dark:text-rose-300 text-sm">{report.invalidRows}</span>
-            </div>
-          </div>
-
-          {/* Validation Errors/Warnings if any */}
-          {report.errors.length > 0 && (
-            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 text-rose-700 dark:text-rose-300 text-xs space-y-1">
-              <span className="font-bold block">{lang === 'zh' ? '校验错误说明：' : 'Validation Errors:'}</span>
-              {report.errors.map((err, idx) => (
-                <p key={idx} className="text-[11px]">
-                  • {lang === 'zh' ? `第 ${err.row} 行 [${err.field}]: ${err.message}` : `Row ${err.row} [${err.field}]: ${err.message}`}
-                </p>
-              ))}
-            </div>
-          )}
-
-          {/* Duplicate Conflict Strategy Selector */}
-          <div className="p-4 bg-[#F5F2EA] dark:bg-[#2D322D] rounded-xl border border-[#E8E2D2] dark:border-[#353B35]">
-            <label className="text-xs font-bold text-[#2D2A26] dark:text-[#EAE7DF] block mb-2">
-              {lang === 'zh' ? '若集合或题目 ID 已存在：' : 'If Collection or Question ID Exists:'}
-            </label>
-            <div className="grid grid-cols-3 gap-2 text-xs">
-              {[
-                { id: 'IMPORT_NEW', label: lang === 'zh' ? '导入为新题库' : 'Import as New' },
-                { id: 'OVERWRITE', label: lang === 'zh' ? '覆盖现有题库' : 'Overwrite Existing' },
-                { id: 'SKIP', label: lang === 'zh' ? '跳过重复项' : 'Skip Duplicates' },
-              ].map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => setConflictStrategy(opt.id as any)}
-                  className={`py-2 px-3 rounded-lg font-semibold border transition-all ${
-                    conflictStrategy === opt.id
-                      ? 'bg-[#5A6D5B] text-white border-[#5A6D5B] shadow-sm'
-                      : 'bg-white dark:bg-[#242824] border-[#E8E2D2] dark:border-[#353B35] text-[#2D2A26] dark:text-[#EAE7DF]'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Confirm Button */}
-          <div className="flex items-center justify-end gap-3 pt-2">
-            <button
-              onClick={() => setReport(null)}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-[#7C776B] hover:bg-[#F5F2EA] dark:hover:bg-[#2D322D]"
-            >
-              {lang === 'zh' ? '取消' : 'Discard'}
-            </button>
-            <button
-              disabled={!report.isValid || report.extractedQuestions.length === 0}
-              onClick={handleConfirmImport}
-              className="px-5 py-2.5 rounded-xl bg-[#5A6D5B] hover:bg-[#485749] text-white font-semibold text-xs transition-all shadow-sm disabled:opacity-50"
-            >
-              {lang === 'zh' ? '确认并保存至本地数据库' : 'Confirm & Save to Local Database'}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
