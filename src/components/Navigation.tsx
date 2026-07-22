@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppSettings } from '../types';
 import { getTranslation } from '../utils/i18n';
-import { LayoutDashboard, Library, UploadCloud, BarChart3, HardDriveDownload, KeyRound, Settings } from 'lucide-react';
+import { LayoutDashboard, Library, UploadCloud, BarChart3, HardDriveDownload, KeyRound, Settings, Lock } from 'lucide-react';
 
 export type TabType = 'dashboard' | 'library' | 'import' | 'analytics' | 'backup' | 'admin' | 'settings';
 
@@ -10,6 +10,7 @@ interface NavigationProps {
   onSelectTab: (tab: TabType) => void;
   isAdmin: boolean;
   settings: AppSettings;
+  hasValidLicense: boolean;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
@@ -17,15 +18,16 @@ export const Navigation: React.FC<NavigationProps> = ({
   onSelectTab,
   isAdmin,
   settings,
+  hasValidLicense,
 }) => {
   const lang = settings.language;
 
   const navItems = [
     { id: 'dashboard' as TabType, label: getTranslation(lang, 'dashboard'), icon: LayoutDashboard },
     { id: 'library' as TabType, label: getTranslation(lang, 'library'), icon: Library },
-    { id: 'import' as TabType, label: getTranslation(lang, 'import'), icon: UploadCloud },
+    { id: 'import' as TabType, label: getTranslation(lang, 'import'), icon: UploadCloud, isLocked: !hasValidLicense },
     { id: 'analytics' as TabType, label: getTranslation(lang, 'analytics'), icon: BarChart3 },
-    { id: 'backup' as TabType, label: getTranslation(lang, 'backupRestore'), icon: HardDriveDownload },
+    { id: 'backup' as TabType, label: getTranslation(lang, 'backupRestore'), icon: HardDriveDownload, isLocked: !hasValidLicense },
     ...(isAdmin ? [{ id: 'admin' as TabType, label: getTranslation(lang, 'adminGenerator'), icon: KeyRound }] : []),
     { id: 'settings' as TabType, label: getTranslation(lang, 'settings'), icon: Settings },
   ];
@@ -51,6 +53,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 >
                   <Icon className="w-4 h-4" />
                   <span>{item.label}</span>
+                  {item.isLocked && <Lock className="w-3 h-3 text-rose-500/80 dark:text-rose-400/80 shrink-0" />}
                 </button>
               );
             })}
@@ -68,7 +71,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               <button
                 key={item.id}
                 onClick={() => onSelectTab(item.id)}
-                className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all min-h-[48px] min-w-[62px] flex-shrink-0 touch-manipulation ${
+                className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all min-h-[48px] min-w-[62px] flex-shrink-0 touch-manipulation relative ${
                   isActive
                     ? 'text-[#5A6D5B] dark:text-[#A3B5A4] font-bold'
                     : 'text-[#7C776B] dark:text-[#A09886] opacity-75 active:opacity-100'
@@ -77,6 +80,11 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <div className={`p-1 rounded-lg ${isActive ? 'bg-[#5A6D5B]/15 dark:bg-[#708571]/30' : ''}`}>
                   <Icon className="w-5 h-5" />
                 </div>
+                {item.isLocked && (
+                  <div className="absolute top-1 right-2.5 bg-rose-500 text-white rounded-full p-0.5 border border-white dark:border-[#1C1E1C]">
+                    <Lock className="w-2.5 h-2.5" />
+                  </div>
+                )}
                 <span className="text-[10px] tracking-tight leading-tight mt-0.5 whitespace-nowrap text-center">
                   {item.label}
                 </span>

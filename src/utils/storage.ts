@@ -45,12 +45,10 @@ export function loadAppState(): AppStorageState {
   const previousWatermark = state.clockWatermark || 0;
   const newWatermark = Math.max(previousWatermark, nowMs);
 
-  // Default initial license: Auto-activate standard Master User license
+  // Default initial license: None by default. User must activate to unlock premium modules.
   let activeLicense: LicenseData | null = null;
   if (state.license?.key) {
     activeLicense = buildLicenseData(state.license.key, deviceId, newWatermark);
-  } else {
-    activeLicense = buildLicenseData(HARDCODED_MASTER_KEYS.USER, deviceId, newWatermark);
   }
 
   let collections = (state.collections && state.collections.length > 0)
@@ -115,11 +113,36 @@ export function saveAppState(state: AppStorageState): void {
 }
 
 /**
- * Reset local storage and IndexedDB
+ * Reset local storage and IndexedDB, keeping the active license intact
  */
 export async function resetAppState(): Promise<void> {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  let licenseToPreserve: LicenseData | null = null;
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed.license) {
+        licenseToPreserve = parsed.license;
+      }
+    } catch (e) {
+      console.error('Failed to parse license from stored state during reset:', e);
+    }
+  }
+
   localStorage.removeItem(STORAGE_KEY);
   await clearIndexedDB();
+
+  if (licenseToPreserve) {
+    const deviceId = getOrCreateDeviceId();
+    const nowMs = Date.now();
+    const partialState = {
+      deviceId,
+      clockWatermark: nowMs,
+      license: licenseToPreserve,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(partialState));
+    await saveStateToIndexedDB(partialState as any);
+  }
 }
 
 /**

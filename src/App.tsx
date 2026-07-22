@@ -7,6 +7,8 @@ import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { SplashScreen } from './components/SplashScreen';
 import { LicenseGate } from './components/LicenseGate';
 import { PinLockModal } from './components/PinLockModal';
+import { LicenseRequiredPlaceholder } from './components/LicenseRequiredPlaceholder';
+import { getTranslation } from './utils/i18n';
 
 import { DashboardView } from './views/DashboardView';
 import { LibraryView } from './views/LibraryView';
@@ -158,6 +160,7 @@ export default function App() {
   };
 
   const isAdmin = appState.license?.payload.licenseType === 'ADMIN';
+  const hasValidLicense = !!(appState.license && appState.license.isValid);
 
   // Render App UI
   return (
@@ -190,6 +193,7 @@ export default function App() {
             onSelectTab={setActiveTab}
             isAdmin={isAdmin}
             settings={appState.settings}
+            hasValidLicense={hasValidLicense}
           />
           <PWAInstallPrompt lang={appState.settings.language} />
         </>
@@ -225,11 +229,19 @@ export default function App() {
             )}
 
             {activeTab === 'import' && (
-              <ImportView
-                appState={appState}
-                onUpdateCollections={handleUpdateCollections}
-                onNavigateTab={setActiveTab}
-              />
+              hasValidLicense ? (
+                <ImportView
+                  appState={appState}
+                  onUpdateCollections={handleUpdateCollections}
+                  onNavigateTab={setActiveTab}
+                />
+              ) : (
+                <LicenseRequiredPlaceholder
+                  lang={appState.settings.language}
+                  moduleName={getTranslation(appState.settings.language, 'import')}
+                  onOpenLicense={() => setShowLicenseModal(true)}
+                />
+              )
             )}
 
             {activeTab === 'analytics' && (
@@ -240,10 +252,18 @@ export default function App() {
             )}
 
             {activeTab === 'backup' && (
-              <BackupRestoreView
-                appState={appState}
-                onRestoreState={(newState) => setAppState(newState)}
-              />
+              hasValidLicense ? (
+                <BackupRestoreView
+                  appState={appState}
+                  onRestoreState={(newState) => setAppState(newState)}
+                />
+              ) : (
+                <LicenseRequiredPlaceholder
+                  lang={appState.settings.language}
+                  moduleName={getTranslation(appState.settings.language, 'backupRestore')}
+                  onOpenLicense={() => setShowLicenseModal(true)}
+                />
+              )
             )}
 
             {activeTab === 'admin' && (

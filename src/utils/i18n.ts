@@ -115,6 +115,9 @@ export const TRANSLATIONS = {
     yesReset: 'Yes, Reset All Data',
     cancel: 'Cancel',
     resetSuccess: 'Local database successfully reset to default state.',
+    licenseRequired: 'License Activation Required',
+    licenseRequiredDesc: 'This premium feature is locked. Please activate a valid offline license to access this module.',
+    activateNow: 'Activate License',
   },
   ms: {
     appName: '易阁 YiGa',
@@ -298,6 +301,9 @@ export const TRANSLATIONS = {
     yesReset: '确认，重置所有数据',
     cancel: '取消',
     resetSuccess: '本地数据库已成功重置为初始状态。',
+    licenseRequired: '需要激活许可证',
+    licenseRequiredDesc: '此高级功能已锁定。请激活有效的离线许可证以启用该模块。',
+    activateNow: '激活许可证',
   },
 };
 
