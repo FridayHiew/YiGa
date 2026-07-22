@@ -10,9 +10,10 @@ createRoot(document.getElementById('root')!).render(
 );
 
 // Register Service Worker for PWA
-if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then(
+    const swUrl = `${import.meta.env.BASE_URL || './'}sw.js`;
+    navigator.serviceWorker.register(swUrl).then(
       (registration) => {
         console.log('PWA ServiceWorker registered successfully:', registration.scope);
       },
@@ -20,12 +21,5 @@ if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
         console.log('PWA ServiceWorker registration failed:', err);
       }
     );
-  });
-} else if ('serviceWorker' in navigator) {
-  // Register in dev mode too for testing PWA features
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((err) => {
-      console.log('PWA ServiceWorker dev registration:', err);
-    });
   });
 }

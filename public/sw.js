@@ -1,18 +1,19 @@
-const CACHE_NAME = 'oktp-pwa-v1';
+const CACHE_NAME = 'yiga-pwa-v2';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  './',
+  './index.html',
+  './manifest.json',
+  './icon.svg'
 ];
 
 // Install Event
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching App Shell and Assets');
-      return cache.addAll(ASSETS_TO_CACHE);
+      console.log('[Service Worker] Caching App Shell');
+      return Promise.allSettled(
+        ASSETS_TO_CACHE.map((url) => cache.add(url).catch((e) => console.warn('Cache add failed for', url, e)))
+      );
     }).then(() => self.skipWaiting())
   );
 });
@@ -33,9 +34,8 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Stale while revalidate / Network fallback to Cache
+// Fetch Event - Stale while revalidate / Network fallback
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests or chrome-extension URLs
   if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
     return;
   }
@@ -43,7 +43,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch background update for cache
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => {
@@ -66,9 +65,8 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() => {
-          // If HTML navigation request fails offline, serve index.html
           if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
+            return caches.match('./index.html') || caches.match('./');
           }
         });
     })
