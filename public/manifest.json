@@ -1,8 +1,10 @@
 {
+  "id": "./",
+  "scope": "./",
+  "start_url": "./?source=pwa",
   "name": "易阁 YiGa - 知识阁",
   "short_name": "易阁 YiGa",
   "description": "化繁为易，阁藏万象 — Yield insight, gather the infinite. Offline Knowledge Training & Quiz Portal",
-  "start_url": "./",
   "display": "standalone",
   "background_color": "#FDFCF8",
   "theme_color": "#5A6D5B",
