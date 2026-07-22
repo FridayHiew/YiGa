@@ -43,7 +43,9 @@ export const QuizView: React.FC<QuizViewProps> = ({
     Map<number, { options: [string, string, string, string]; correctIndex: number }>
   >(new Map());
 
-  // Initialize questions on mount
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Initialize questions on mount or retry
   useEffect(() => {
     let selectedQuestions: Question[] = [];
 
@@ -98,7 +100,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
     if (config.mode === 'EXAM' && config.timeLimitMinutes) {
       setTimeRemainingSeconds(config.timeLimitMinutes * 60);
     }
-  }, []);
+  }, [retryCount]);
 
   // Timer Tick
   useEffect(() => {
@@ -281,6 +283,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 setFinalResult(null);
                 setCurrentIndex(0);
                 setUserAnswers(new Map());
+                setShowExplanation(new Map());
+                setFlaggedQuestions(new Set());
+                setTimeSpentSeconds(0);
+                setShowGridModal(false);
+                setRetryCount((prev) => prev + 1);
               }}
               className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs shadow-md shadow-indigo-500/20"
             >
