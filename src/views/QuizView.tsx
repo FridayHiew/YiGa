@@ -3,6 +3,7 @@ import { AppStorageState, Question, QuizConfig, QuizResult, UserAnswerRecord } f
 import { calculateAndUpdateStreak, saveAppState } from '../utils/storage';
 import { getTranslation } from '../utils/i18n';
 import { CheckCircle2, XCircle, ArrowRight, ArrowLeft, Clock, Award, RotateCcw, FileText, Check, AlertCircle, Image as ImageIcon, Grid, HelpCircle } from 'lucide-react';
+import { quizSounds } from '../utils/sound';
 
 interface QuizViewProps {
   appState: AppStorageState;
@@ -130,6 +131,8 @@ export const QuizView: React.FC<QuizViewProps> = ({
   const handleSelectOption = (optionIndex: number) => {
     if (isExamCompleted) return;
 
+    const alreadyAnswered = userAnswers.has(currentIndex);
+
     setUserAnswers((prev) => {
       const next = new Map(prev);
       next.set(currentIndex, optionIndex);
@@ -142,6 +145,19 @@ export const QuizView: React.FC<QuizViewProps> = ({
         next.set(currentIndex, true);
         return next;
       });
+
+      // Play sound on first option selection
+      if (!alreadyAnswered) {
+        const shuff = shuffledQuestionsMap.get(currentIndex);
+        if (shuff) {
+          const isCorrect = optionIndex === shuff.correctIndex;
+          if (isCorrect) {
+            quizSounds.playRightAnswer();
+          } else {
+            quizSounds.playWrongAnswer();
+          }
+        }
+      }
     }
   };
 
@@ -199,6 +215,15 @@ export const QuizView: React.FC<QuizViewProps> = ({
     setFinalResult(result);
     setIsExamCompleted(true);
     onFinishQuiz(result);
+
+    // Play exam pass/fail sound effects
+    if (config.mode === 'EXAM') {
+      if (passed) {
+        quizSounds.playPassExam();
+      } else {
+        quizSounds.playFailedExam();
+      }
+    }
   };
 
   if (questions.length === 0) {
@@ -299,30 +324,43 @@ export const QuizView: React.FC<QuizViewProps> = ({
         {/* Detailed Answer Breakdown */}
         <div className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 mb-3">
-            Answer Review & Explanations
+            {config.mode === 'EXAM' ? 'Answer Review' : 'Answer Review & Explanations'}
           </h3>
 
-          {finalResult.answerRecords.map((ans, idx) => (
-            <div
-              key={idx}
-              className={`p-4 rounded-xl border text-xs space-y-2 ${
-                ans.isCorrect
-                  ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800'
-                  : 'bg-rose-50/40 dark:bg-rose-950/20 border-rose-200 dark:border-rose-800'
-              }`}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <span className="font-bold text-slate-900 dark:text-slate-100">
-                  Q{idx + 1}. {ans.questionText}
-                </span>
-                {ans.isCorrect ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                ) : (
-                  <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                )}
-              </div>
+          {finalResult.answerRecords.map((ans, idx) => {
+            const matchedQ = questions.find((q) => q.id === ans.questionId);
+            return (
+              <div
+                key={idx}
+                className={`p-4 rounded-xl border text-xs space-y-2 ${
+                  ans.isCorrect
+                    ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800'
+                    : 'bg-rose-50/40 dark:bg-rose-950/20 border-rose-200 dark:border-rose-800'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <span className="font-bold text-slate-900 dark:text-slate-100">
+                    Q{idx + 1}. {ans.questionText}
+                  </span>
+                  {ans.isCorrect ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  )}
+                </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
+                {matchedQ?.image && (
+                  <div className="my-2 max-h-48 rounded-xl overflow-hidden border border-[#E8E2D2] dark:border-[#353B35] bg-[#F5F2EA] dark:bg-[#2D322D] flex items-center justify-center p-1.5 w-fit max-w-full">
+                    <img
+                      src={matchedQ.image}
+                      alt="Question diagram"
+                      className="max-h-44 object-contain rounded-lg"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
                 {ans.shuffledOptions?.map((opt, oIdx) => {
                   const isSelected = ans.selectedOptionIndex === oIdx;
                   const isCorrectOpt = ans.correctOptionIndex === oIdx;
@@ -344,7 +382,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 })}
               </div>
             </div>
-          ))}
+          )})}
         </div>
       </div>
     );
@@ -494,6 +532,14 @@ export const QuizView: React.FC<QuizViewProps> = ({
               <p className="text-[#2D2A26] dark:text-[#EAE7DF] leading-relaxed">
                 {currentQ.explanation || 'No explicit explanation provided for this question.'}
               </p>
+              {currentQ.sourceReference && (
+                <div className="mt-2 pt-2 border-t border-[#EAE5D8] dark:border-[#353B35] text-[11px] text-[#5A6D5B] dark:text-[#A3B5A4] flex items-center gap-1">
+                  <span className="font-bold">
+                    {lang === 'zh' ? '参考来源: ' : lang === 'ms' ? 'Rujukan Sumber: ' : 'Source Reference: '}
+                  </span>
+                  <span>{currentQ.sourceReference}</span>
+                </div>
+              )}
             </div>
           )}
 

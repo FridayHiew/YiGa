@@ -55,7 +55,7 @@ export function loadAppState(): AppStorageState {
     ? state.collections
     : SAMPLE_COLLECTIONS;
 
-  if (collections.some((c) => c.id === 'col-aws-cloud-01')) {
+  if (collections.some((c) => c.id === 'col-aws-cloud-01') || !collections.some((c) => c.id === 'col-cloud-02')) {
     collections = SAMPLE_COLLECTIONS;
   }
 

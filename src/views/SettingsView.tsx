@@ -88,7 +88,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <div>
             <label className="font-semibold text-[#6B6559] dark:text-[#A09886] block mb-1">
-              {getTranslation(lang, 'language')} (i18n)
+              {getTranslation(lang, 'language')}
             </label>
             <select
               value={settings.language}
@@ -157,7 +157,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               >
                 {lang === 'zh'
                   ? size === 'small' ? '小号' : size === 'medium' ? '标准' : '大号'
-                  : size}
+                  : size.charAt(0).toUpperCase() + size.slice(1)}
               </button>
             ))}
           </div>

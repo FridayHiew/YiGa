@@ -41,21 +41,6 @@ export const LicenseRequiredPlaceholder: React.FC<LicenseRequiredPlaceholderProp
           <Key className="w-4 h-4" />
           <span>{t('activateNow')}</span>
         </button>
-
-        {/* Demo instructions tip */}
-        <div className="mt-4 p-3 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/10 border border-indigo-100/50 dark:border-indigo-900/30 text-left">
-          <div className="flex gap-2 items-start text-xs text-indigo-900 dark:text-indigo-300 font-medium">
-            <ShieldAlert className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
-            <div>
-              <span className="font-bold block mb-0.5">
-                {lang === 'zh' ? '演示 / 开发者提示' : 'Demo / Developer Notice'}
-              </span>
-              <span>
-                {lang === 'zh' ? '您可以在系统设置中或顶部状态栏点击并激活主管理员密钥来一键解锁所有功能。' : 'You can quickly activate the Master Administrator Key via Settings or Header to unlock all modules.'}
-              </span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

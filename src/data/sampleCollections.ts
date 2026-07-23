@@ -181,7 +181,7 @@ export const SAMPLE_COLLECTIONS: KnowledgeCollection[] = [
     version: 1,
     createdAt: '2026-07-15T00:00:00.000Z',
     updatedAt: '2026-07-22T00:00:00.000Z',
-    questionCount: 4,
+    questionCount: 5,
     categories: ['Zero Trust', 'SAML & OAuth', 'Access Control Models'],
     questions: [
       {
@@ -230,6 +230,64 @@ export const SAMPLE_COLLECTIONS: KnowledgeCollection[] = [
         ],
         correctIndex: 0,
         explanation: 'FIDO2 / WebAuthn binds cryptographic authentication challenges directly to the origin domain, rendering AiTM reverse proxies useless.',
+      },
+      {
+        id: 'iam-q5',
+        category: 'Zero Trust',
+        questionText: 'When designing a cloud infrastructure with fine-grained access policies, which design pattern guarantees that entities are given only the minimum access necessary to perform their specific tasks?',
+        options: [
+          'Principle of Least Privilege (PoLP)',
+          'Role-Based Single Sign-On (SSO)',
+          'Shared Access Signatures (SAS)',
+          'Pre-Signed URL Delegation'
+        ],
+        correctIndex: 0,
+        explanation: 'The Principle of Least Privilege (PoLP) ensures that users, processes, and systems only have the access privileges absolutely necessary to complete their task, reducing the blast radius of any credential compromise.',
+        image: '/src/assets/images/cloud_security_diagram_1784766109187.jpg',
+        sourceReference: 'NIST Special Publication 800-207 (Zero Trust Architecture), Section 2.1'
+      }
+    ]
+  },
+  {
+    id: 'col-cloud-02',
+    name: 'Cloud Perimeter & API Firewalling',
+    description: 'Advanced questions on web application firewalls (WAF), secure cloud ingress patterns, API gateways, and perimeter defense strategies.',
+    group: 'Cloud & Identity Defense',
+    difficulty: 'Master',
+    version: 1,
+    createdAt: '2026-07-22T00:00:00.000Z',
+    updatedAt: '2026-07-22T00:00:00.000Z',
+    questionCount: 2,
+    categories: ['Perimeter Security', 'API Protection', 'WAF Architecture'],
+    questions: [
+      {
+        id: 'cloud-api-q1',
+        category: 'API Protection',
+        questionText: 'Which perimeter defensive strategy is most effective at preventing automated credential-stuffing attacks against public-facing OAuth 2.0 token exchange endpoints?',
+        options: [
+          'Adaptive Rate Limiting with anomaly-based IP threat reputational analysis',
+          'Relying solely on client-side transport-layer TLS certificate pinning',
+          'Standard symmetric payload encryption using client keys',
+          'Extending OAuth authorization code lifetime parameters to 24 hours'
+        ],
+        correctIndex: 0,
+        explanation: 'Adaptive Rate Limiting and risk profiling analyze incoming behavioral patterns and block malicious automated traffic dynamically while avoiding service disruption for legitimate clients.',
+        image: '/src/assets/images/api_firewall_diagram_1784766427739.jpg',
+        sourceReference: 'OWASP API Security Top 10 - API4:2023 Lack of Resources & Rate Limiting'
+      },
+      {
+        id: 'cloud-api-q2',
+        category: 'WAF Architecture',
+        questionText: 'When deploying a Web Application Firewall (WAF) to defend backend RESTful microservices, which parsing inspection method is essential for blocking advanced SQL Injection (SQLi) evasion payloads?',
+        options: [
+          'Deep packet inspection of request bodies and URI paths using regular expressions paired with abstract syntax tree (AST) grammar checks',
+          'Validating the dynamic timestamp header values using strict RFC standards',
+          'Enforcing secure HMAC signatures on the payload using client certificates',
+          'Verifying that the Content-Type header matches a pre-approved whitelist'
+        ],
+        correctIndex: 0,
+        explanation: 'Deep inspection with SQL/HTML syntax AST analysis evaluates the structural syntax of incoming strings, enabling the WAF to recognize SQL operations and nested evasion paths that bypass traditional regex patterns.',
+        sourceReference: 'NIST Special Publication 800-95 (Guide to Secure Web Services), Section 4.3'
       }
     ]
   }

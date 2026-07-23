@@ -182,7 +182,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             onChange={(e) => setSelectedGroupFilter(e.target.value)}
             className="px-3 py-2 bg-white dark:bg-[#242824] border border-[#E8E2D2] dark:border-[#353B35] rounded-xl text-xs font-semibold text-[#2D2A26] dark:text-[#EAE7DF] focus:outline-none focus:ring-2 focus:ring-[#5A6D5B]"
           >
-            <option value="ALL">{lang === 'zh' ? `全部分组 (${collections.length})` : `All Groups (${collections.length})`}</option>
+            <option value="ALL">{lang === 'zh' ? `全部分组 (${allGroups.length})` : `All Groups (${allGroups.length})`}</option>
             {allGroups.map((g) => (
               <option key={g} value={g}>
                 📁 {lang === 'zh' ? `分组: ${g}` : `Group: ${g}`}
@@ -585,14 +585,6 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                     {selectedCollection.questions.length} Questions stored locally
                   </p>
                 </div>
-                <button
-                  onClick={() => handleStartEdit(selectedCollection)}
-                  className="px-2.5 py-1 rounded-lg bg-[#F5F2EA] dark:bg-[#2D322D] text-[#5A6D5B] dark:text-[#A3B5A4] hover:bg-[#EAE5D8] border border-[#E8E2D2] dark:border-[#353B35] font-semibold text-xs flex items-center gap-1 transition-colors"
-                  title="Edit Collection Details"
-                >
-                  <Edit3 className="w-3.5 h-3.5" />
-                  <span>Edit</span>
-                </button>
               </div>
               <button
                 onClick={() => setSelectedCollection(null)}
@@ -623,6 +615,17 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                     <p className="font-semibold text-[#2D2A26] dark:text-[#EAE7DF] mb-2">
                       {q.questionText}
                     </p>
+
+                    {q.image && (
+                      <div className="my-3 max-h-64 rounded-2xl overflow-hidden border border-[#E8E2D2] dark:border-[#353B35] bg-[#F5F2EA] dark:bg-[#2D322D] flex items-center justify-center p-2">
+                        <img
+                          src={q.image}
+                          alt="Question supporting diagram"
+                          className="max-h-60 object-contain rounded-xl"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                    )}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mb-2">
                       {q.options.map((opt, oIdx) => (
