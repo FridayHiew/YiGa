@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppStorageState, Question, QuizConfig, QuizResult, UserAnswerRecord } from '../types';
-import { calculateAndUpdateStreak, saveAppState } from '../utils/storage';
+import { calculateAndUpdateStreak, saveAppState, resolveImagePath } from '../utils/storage';
 import { getTranslation } from '../utils/i18n';
 import { CheckCircle2, XCircle, ArrowRight, ArrowLeft, Clock, Award, RotateCcw, FileText, Check, AlertCircle, Image as ImageIcon, Grid, HelpCircle } from 'lucide-react';
 import { quizSounds } from '../utils/sound';
@@ -352,7 +352,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 {matchedQ?.image && (
                   <div className="my-2 max-h-48 rounded-xl overflow-hidden border border-[#E8E2D2] dark:border-[#353B35] bg-[#F5F2EA] dark:bg-[#2D322D] flex items-center justify-center p-1.5 w-fit max-w-full">
                     <img
-                      src={matchedQ.image}
+                      src={resolveImagePath(matchedQ.image)}
                       alt="Question diagram"
                       className="max-h-44 object-contain rounded-lg"
                       referrerPolicy="no-referrer"
@@ -472,7 +472,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
         {currentQ.image && (
           <div className="my-3 max-h-64 rounded-2xl overflow-hidden border border-[#E8E2D2] dark:border-[#353B35] bg-[#F5F2EA] dark:bg-[#2D322D] flex items-center justify-center p-2">
             <img
-              src={currentQ.image}
+              src={resolveImagePath(currentQ.image)}
               alt="Question supporting diagram"
               className="max-h-60 object-contain rounded-xl"
             />

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AppStorageState, KnowledgeCollection, QuizConfig } from '../types';
 import { exportCollectionAsJSON, exportCollectionAsZIP } from '../utils/exporter';
 import { getTranslation } from '../utils/i18n';
+import { resolveImagePath } from '../utils/storage';
 import { Plus, Play, FileText, Download, Trash2, Edit3, BookOpen, Layers, Check, X, Search, Folder, Tag } from 'lucide-react';
 
 interface LibraryViewProps {
@@ -619,7 +620,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                     {q.image && (
                       <div className="my-3 max-h-64 rounded-2xl overflow-hidden border border-[#E8E2D2] dark:border-[#353B35] bg-[#F5F2EA] dark:bg-[#2D322D] flex items-center justify-center p-2">
                         <img
-                          src={q.image}
+                          src={resolveImagePath(q.image)}
                           alt="Question supporting diagram"
                           className="max-h-60 object-contain rounded-xl"
                           referrerPolicy="no-referrer"

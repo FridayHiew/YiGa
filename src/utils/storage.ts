@@ -185,3 +185,30 @@ export function calculateAndUpdateStreak(state: AppStorageState, sessionQuestion
   return updatedState;
 }
 
+/**
+ * Robust image path resolver supporting local development and subpath deployments like GitHub Pages.
+ */
+export function resolveImagePath(pathStr: string | undefined): string {
+  if (!pathStr) return '';
+  if (
+    pathStr.startsWith('http://') ||
+    pathStr.startsWith('https://') ||
+    pathStr.startsWith('data:')
+  ) {
+    return pathStr;
+  }
+
+  // Clean leading slash if any
+  const cleanPath = pathStr.startsWith('/') ? pathStr.slice(1) : pathStr;
+
+  // Map legacy /src/assets/images paths to images/
+  const mappedPath = cleanPath.startsWith('src/assets/images/')
+    ? cleanPath.replace('src/assets/images/', 'images/')
+    : cleanPath;
+
+  // Prepend import.meta.env.BASE_URL if available
+  const baseUrl = import.meta.env.BASE_URL || '/';
+  const separator = baseUrl.endsWith('/') ? '' : '/';
+  return `${baseUrl}${separator}${mappedPath}`;
+}
+
