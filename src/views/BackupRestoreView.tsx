@@ -96,8 +96,10 @@ export const BackupRestoreView: React.FC<BackupRestoreViewProps> = ({
           ? `备份恢复成功！已成功载入 ${backupData.collections.length} 个题库集合及 ${backupData.quizResults?.length || 0} 条历史测试记录。`
           : `Backup restored successfully! ${backupData.collections.length} collections and ${backupData.quizResults?.length || 0} quiz history sessions loaded.`
       );
+      window.scrollTo(0, 0);
     } catch (e: any) {
       setErrorMsg(lang === 'zh' ? `恢复失败：${e.message}` : `Restore failed: ${e.message}`);
+      window.scrollTo(0, 0);
     }
   };
 

@@ -103,6 +103,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
     }
   }, [retryCount]);
 
+  // Auto-scroll to top on question change or exam completion (Item 2)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentIndex, isExamCompleted]);
+
   // Timer Tick
   useEffect(() => {
     if (isExamCompleted) return;
@@ -230,13 +235,17 @@ export const QuizView: React.FC<QuizViewProps> = ({
     return (
       <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
         <p className="text-xs text-slate-500 mb-4">
-          No questions available for this session. Please import or select a knowledge collection with questions.
+          {lang === 'zh'
+            ? '此会话没有可用题目。请导入或选择包含题目的知识库。'
+            : lang === 'ms'
+            ? 'Tiada soalan tersedia untuk sesi ini. Sila import atau pilih koleksi pengetahuan dengan soalan.'
+            : 'No questions available for this session. Please import or select a knowledge collection with questions.'}
         </p>
         <button
           onClick={onExitQuiz}
           className="px-4 py-2 bg-indigo-600 text-white font-semibold text-xs rounded-xl"
         >
-          Return to Dashboard
+          {lang === 'zh' ? '返回仪表板' : lang === 'ms' ? 'Kembali ke Papan Pemuka' : 'Return to Dashboard'}
         </button>
       </div>
     );
@@ -271,26 +280,36 @@ export const QuizView: React.FC<QuizViewProps> = ({
             {finalResult.scorePercentage}%
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-            Pass mark requirement: {config.passMarkPercentage || 70}%
+            {lang === 'zh'
+              ? `及格分数要求: ${config.passMarkPercentage || 70}%`
+              : lang === 'ms'
+              ? `Keperluan markah lulus: ${config.passMarkPercentage || 70}%`
+              : `Pass mark requirement: ${config.passMarkPercentage || 70}%`}
           </p>
 
           <div className="grid grid-cols-3 gap-3 p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl mb-6 text-xs">
             <div>
-              <span className="text-slate-400 block text-[10px]">Total Questions</span>
+              <span className="text-slate-400 block text-[10px]">
+                {lang === 'zh' ? '题目总数' : lang === 'ms' ? 'Jumlah Soalan' : 'Total Questions'}
+              </span>
               <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">
                 {finalResult.totalQuestions}
               </span>
             </div>
             <div>
-              <span className="text-emerald-600 dark:text-emerald-400 block text-[10px]">Correct Answers</span>
+              <span className="text-emerald-600 dark:text-emerald-400 block text-[10px]">
+                {lang === 'zh' ? '正确题数' : lang === 'ms' ? 'Jawapan Betul' : 'Correct Answers'}
+              </span>
               <span className="font-bold text-emerald-700 dark:text-emerald-300 text-sm">
                 {finalResult.correctCount}
               </span>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px]">Time Spent</span>
+              <span className="text-slate-400 block text-[10px]">
+                {lang === 'zh' ? '所用时间' : lang === 'ms' ? 'Masa Diambil' : 'Time Spent'}
+              </span>
               <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">
-                {Math.floor(finalResult.timeSpentSeconds / 60)}m {finalResult.timeSpentSeconds % 60}s
+                {Math.floor(finalResult.timeSpentSeconds / 60)}{lang === 'zh' ? '分' : 'm'} {finalResult.timeSpentSeconds % 60}{lang === 'zh' ? '秒' : 's'}
               </span>
             </div>
           </div>
@@ -300,7 +319,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
               onClick={onExitQuiz}
               className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs"
             >
-              Back to Dashboard
+              {lang === 'zh' ? '返回仪表板' : lang === 'ms' ? 'Kembali ke Papan Pemuka' : 'Back to Dashboard'}
             </button>
             <button
               onClick={() => {
@@ -316,7 +335,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
               }}
               className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs shadow-md shadow-indigo-500/20"
             >
-              Retry Quiz
+              {getTranslation(lang, 'retryQuiz')}
             </button>
           </div>
         </div>
@@ -324,7 +343,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
         {/* Detailed Answer Breakdown */}
         <div className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 mb-3">
-            {config.mode === 'EXAM' ? 'Answer Review' : 'Answer Review & Explanations'}
+            {lang === 'zh'
+              ? (config.mode === 'EXAM' ? '试卷答案回顾' : '练习答案回顾与解析')
+              : lang === 'ms'
+              ? (config.mode === 'EXAM' ? 'Semakan Jawapan Peperiksaan' : 'Semakan Jawapan & Penerangan')
+              : (config.mode === 'EXAM' ? 'Answer Review' : 'Answer Review & Explanations')}
           </h3>
 
           {finalResult.answerRecords.map((ans, idx) => {
@@ -395,10 +418,30 @@ export const QuizView: React.FC<QuizViewProps> = ({
       <div className="p-4 bg-white dark:bg-[#242824] rounded-2xl border border-[#E8E2D2] dark:border-[#353B35] shadow-sm flex items-center justify-between gap-4">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-wider text-[#5A6D5B] dark:text-[#A3B5A4] block font-serif">
-            {config.mode} MODE
+            {lang === 'zh'
+              ? (config.mode === 'PRACTICE'
+                  ? '练习模式'
+                  : config.mode === 'EXAM'
+                  ? '模拟考试模式'
+                  : config.mode === 'MISTAKE_REVIEW'
+                  ? '错题复习模式'
+                  : '薄弱专项训练')
+              : lang === 'ms'
+              ? (config.mode === 'PRACTICE'
+                  ? 'MOD LATIHAN'
+                  : config.mode === 'EXAM'
+                  ? 'MOD PEPERIKSAAN'
+                  : config.mode === 'MISTAKE_REVIEW'
+                  ? 'MOD SEMAKAN KESILAPAN'
+                  : 'LATIHAN TOPIK LEMAH')
+              : `${config.mode} MODE`}
           </span>
           <div className="text-xs font-extrabold text-[#2D2A26] dark:text-[#EAE7DF]">
-            Question {currentIndex + 1} of {questions.length}
+            {lang === 'zh'
+              ? `第 ${currentIndex + 1} 题，共 ${questions.length} 题`
+              : lang === 'ms'
+              ? `Soalan ${currentIndex + 1} daripada ${questions.length}`
+              : `Question ${currentIndex + 1} of ${questions.length}`}
           </div>
         </div>
 
@@ -420,7 +463,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             <button
               onClick={() => setShowGridModal(true)}
               className="p-2 rounded-xl bg-[#F5F2EA] dark:bg-[#2D322D] text-[#2D2A26] dark:text-[#EAE7DF] text-xs font-semibold hover:bg-[#EAE5D8] transition-colors border border-[#E8E2D2] dark:border-[#353B35]"
-              title="Question Navigator Grid"
+              title={lang === 'zh' ? '题目导航网格' : lang === 'ms' ? 'Grid Penunjuk Soalan' : 'Question Navigator Grid'}
             >
               <Grid className="w-4 h-4" />
             </button>
@@ -430,7 +473,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             onClick={onExitQuiz}
             className="text-xs font-semibold px-3 py-1.5 bg-[#F5F2EA] dark:bg-[#2D322D] text-[#2D2A26] dark:text-[#EAE7DF] rounded-xl hover:bg-[#EAE5D8] transition-colors border border-[#E8E2D2] dark:border-[#353B35]"
           >
-            Exit
+            {lang === 'zh' ? '退出' : lang === 'ms' ? 'Keluar' : 'Exit'}
           </button>
         </div>
       </div>
@@ -447,7 +490,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
       <div className="p-6 bg-white dark:bg-[#242824] rounded-3xl border border-[#E8E2D2] dark:border-[#353B35] shadow-sm space-y-6">
         <div className="flex items-center justify-between text-xs text-[#7C776B] dark:text-[#A09886]">
           <span className="font-semibold text-[#6B6559] dark:text-[#A09886]">
-            Topic: {currentQ.category || 'General'}
+            {lang === 'zh' ? '知识点: ' : lang === 'ms' ? 'Topik: ' : 'Topic: '}{currentQ.category || (lang === 'zh' ? '常规' : 'General')}
           </span>
           {config.mode === 'EXAM' && (
             <button
@@ -458,7 +501,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
                   : 'bg-[#F5F2EA] text-[#6B6559] border-[#E8E2D2] dark:bg-[#2D322D] dark:text-[#A09886] dark:border-[#353B35]'
               }`}
             >
-              {flaggedQuestions.has(currentIndex) ? '★ Flagged' : '☆ Flag for Review'}
+              {lang === 'zh'
+                ? (flaggedQuestions.has(currentIndex) ? '★ 已标记' : '☆ 标记待复查')
+                : lang === 'ms'
+                ? (flaggedQuestions.has(currentIndex) ? '★ Ditandakan' : '☆ Tanda untuk Semakan')
+                : (flaggedQuestions.has(currentIndex) ? '★ Flagged' : '☆ Flag for Review')}
             </button>
           )}
         </div>
@@ -527,10 +574,10 @@ export const QuizView: React.FC<QuizViewProps> = ({
             <div className="p-4 rounded-2xl bg-[#F5F2EA] dark:bg-[#2D322D] border border-[#E8E2D2] dark:border-[#353B35] text-xs space-y-1">
               <span className="font-bold text-[#3E4A3E] dark:text-[#F5F2EA] block flex items-center gap-1.5 font-serif">
                 <HelpCircle className="w-4 h-4 text-[#5A6D5B]" />
-                Explanation:
+                {lang === 'zh' ? '解析:' : lang === 'ms' ? 'Penerangan:' : 'Explanation:'}
               </span>
               <p className="text-[#2D2A26] dark:text-[#EAE7DF] leading-relaxed">
-                {currentQ.explanation || 'No explicit explanation provided for this question.'}
+                {currentQ.explanation || (lang === 'zh' ? '该题未提供具体解析。' : lang === 'ms' ? 'Tiada penerangan diberikan untuk soalan ini.' : 'No explicit explanation provided for this question.')}
               </p>
               {currentQ.sourceReference && (
                 <div className="mt-2 pt-2 border-t border-[#EAE5D8] dark:border-[#353B35] text-[11px] text-[#5A6D5B] dark:text-[#A3B5A4] flex items-center gap-1">
@@ -551,7 +598,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#F5F2EA] dark:bg-[#2D322D] text-[#2D2A26] dark:text-[#EAE7DF] font-semibold text-xs disabled:opacity-40 border border-[#E8E2D2] dark:border-[#353B35]"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Previous</span>
+            <span>{lang === 'zh' ? '上一题' : lang === 'ms' ? 'Sebelumnya' : 'Previous'}</span>
           </button>
 
           {currentIndex < questions.length - 1 ? (
@@ -559,7 +606,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
               onClick={() => setCurrentIndex((prev) => prev + 1)}
               className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[#5A6D5B] hover:bg-[#485749] text-white font-semibold text-xs transition-all shadow-sm"
             >
-              <span>Next Question</span>
+              <span>{lang === 'zh' ? '下一题' : lang === 'ms' ? 'Seterusnya' : 'Next Question'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           ) : (
@@ -567,7 +614,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
               onClick={handleFinalSubmit}
               className="flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-[#3E4A3E] hover:bg-[#2E372E] text-white font-bold text-xs transition-all shadow-sm"
             >
-              <span>Submit Session</span>
+              <span>{lang === 'zh' ? (config.mode === 'EXAM' ? '提交试卷' : '结束测试') : lang === 'ms' ? (config.mode === 'EXAM' ? 'Hantar Peperiksaan' : 'Tamat Sesi') : (config.mode === 'EXAM' ? 'Submit Exam' : 'Submit Session')}</span>
               <Check className="w-4 h-4" />
             </button>
           )}
@@ -579,7 +626,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full">
             <h3 className="font-bold text-base text-slate-900 dark:text-slate-100 mb-4">
-              Question Navigator Grid
+              {lang === 'zh' ? '题目导航网格' : lang === 'ms' ? 'Grid Penunjuk Soalan' : 'Question Navigator Grid'}
             </h3>
 
             <div className="grid grid-cols-5 gap-2 max-h-60 overflow-y-auto mb-6">
@@ -616,7 +663,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 onClick={() => setShowGridModal(false)}
                 className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-xl"
               >
-                Close
+                {lang === 'zh' ? '关闭' : lang === 'ms' ? 'Tutup' : 'Close'}
               </button>
             </div>
           </div>
