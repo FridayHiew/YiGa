@@ -272,7 +272,7 @@ export const SAMPLE_COLLECTIONS: KnowledgeCollection[] = [
         ],
         correctIndex: 0,
         explanation: 'Adaptive Rate Limiting and risk profiling analyze incoming behavioral patterns and block malicious automated traffic dynamically while avoiding service disruption for legitimate clients.',
-        image: '/src/assets/images/api_firewall_diagram_1784766427739.jpg',
+        image: '/assets/images/api_firewall_diagram_1784766427739.jpg',
         sourceReference: 'OWASP API Security Top 10 - API4:2023 Lack of Resources & Rate Limiting'
       },
       {
