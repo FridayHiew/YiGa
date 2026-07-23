@@ -32,7 +32,6 @@ export default function App() {
   const [isLocked, setIsLocked] = useState<boolean>(() => appState.settings.securityEnabled);
 
   // Modals
-  const [showLicenseModal, setShowLicenseModal] = useState<boolean>(false);
   const [showProfileModal, setShowProfileModal] = useState<boolean>(false);
 
   // Auto-hydrate state from IndexedDB on startup
@@ -131,7 +130,7 @@ export default function App() {
     // Check license requirement
     if (appState.license && !appState.license.isValid) {
       alert('License activation required to launch practice or exam sessions.');
-      setShowLicenseModal(true);
+      setActiveTab('license');
       return;
     }
     setActiveQuizConfig(config);
@@ -179,7 +178,7 @@ export default function App() {
         settings={appState.settings}
         profile={appState.profile}
         onUpdateSettings={handleUpdateSettings}
-        onOpenLicenseModal={() => setShowLicenseModal(true)}
+        onOpenLicenseModal={() => setActiveTab('license')}
         onOpenProfileModal={() => setShowProfileModal(true)}
         onLockApp={() => setIsLocked(true)}
         onShowSplash={() => setShowSplashScreen(true)}
@@ -239,7 +238,7 @@ export default function App() {
                 <LicenseRequiredPlaceholder
                   lang={appState.settings.language}
                   moduleName={getTranslation(appState.settings.language, 'import')}
-                  onOpenLicense={() => setShowLicenseModal(true)}
+                  onOpenLicense={() => setActiveTab('license')}
                 />
               )
             )}
@@ -261,7 +260,7 @@ export default function App() {
                 <LicenseRequiredPlaceholder
                   lang={appState.settings.language}
                   moduleName={getTranslation(appState.settings.language, 'backupRestore')}
-                  onOpenLicense={() => setShowLicenseModal(true)}
+                  onOpenLicense={() => setActiveTab('license')}
                 />
               )
             )}
@@ -277,9 +276,29 @@ export default function App() {
               <SettingsView
                 appState={appState}
                 onUpdateSettings={handleUpdateSettings}
-                onOpenLicenseModal={() => setShowLicenseModal(true)}
+                onOpenLicenseModal={() => setActiveTab('license')}
                 onResetData={handleResetData}
               />
+            )}
+
+            {activeTab === 'license' && (
+              <div className="py-4">
+                <LicenseGate
+                  deviceId={appState.deviceId}
+                  clockWatermark={appState.clockWatermark}
+                  currentLicense={appState.license}
+                  settings={appState.settings}
+                  onActivateLicense={(license) => {
+                    handleActivateLicense(license);
+                    setTimeout(() => {
+                      setActiveTab('settings');
+                    }, 1500);
+                  }}
+                  onDeleteLicense={handleDeleteLicense}
+                  onCloseModal={() => setActiveTab('settings')}
+                  isModalView={false}
+                />
+              </div>
             )}
           </>
         )}
@@ -293,29 +312,7 @@ export default function App() {
         />
       )}
 
-      {/* License Modal */}
-      {showLicenseModal && (
-        <div className="fixed inset-0 z-50 bg-[#2D2A26]/60 dark:bg-[#1C1E1C]/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="relative w-full max-w-2xl">
-            <button
-              onClick={() => setShowLicenseModal(false)}
-              className="absolute top-8 right-8 z-10 text-[#7C776B] hover:text-[#2D2A26] dark:hover:text-[#F5F2EA]"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <LicenseGate
-              deviceId={appState.deviceId}
-              clockWatermark={appState.clockWatermark}
-              currentLicense={appState.license}
-              settings={appState.settings}
-              onActivateLicense={handleActivateLicense}
-              onDeleteLicense={handleDeleteLicense}
-              onCloseModal={() => setShowLicenseModal(false)}
-              isModalView
-            />
-          </div>
-        </div>
-      )}
+      {/* License modal removed to act as a page */}
 
       {/* Profile Modal */}
       {showProfileModal && (

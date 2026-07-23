@@ -64,24 +64,12 @@ export const Header: React.FC<HeaderProps> = ({
               className="text-base font-bold text-[#3E4A3E] dark:text-[#F5F2EA] leading-tight flex items-center gap-2 font-serif cursor-pointer hover:opacity-90"
             >
               <span>{getTranslation(lang, 'appName')}</span>
-              <span className={`text-[10px] tracking-tight px-2 py-0.5 rounded-full font-semibold border flex items-center gap-1 ${
-                isOnline 
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
-                  : 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
-              }`}>
-                {isOnline ? (
-                  <>
-                    <Wifi className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                    <span className="hidden sm:inline">PWA Online</span>
-                    <span className="sm:hidden">Online</span>
-                  </>
-                ) : (
-                  <>
-                    <WifiOff className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                    <span>{lang === 'zh' ? '离线模式' : 'Offline Mode'}</span>
-                  </>
-                )}
-              </span>
+              {!isOnline && (
+                <span className="text-[10px] tracking-tight px-2 py-0.5 rounded-full font-semibold border flex items-center gap-1 bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800">
+                  <WifiOff className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                  <span>{lang === 'zh' ? '离线模式' : 'Offline Mode'}</span>
+                </span>
+              )}
             </h1>
             <p className="text-xs text-[#7C776B] dark:text-[#A09886] hidden sm:block italic font-serif">
               {lang === 'zh' ? '“化繁为易，阁藏万象”' : '“Yield insight, gather the infinite.”'}

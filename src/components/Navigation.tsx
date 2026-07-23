@@ -3,7 +3,7 @@ import { AppSettings } from '../types';
 import { getTranslation } from '../utils/i18n';
 import { LayoutDashboard, Library, UploadCloud, BarChart3, HardDriveDownload, KeyRound, Settings, Lock } from 'lucide-react';
 
-export type TabType = 'dashboard' | 'library' | 'import' | 'analytics' | 'backup' | 'admin' | 'settings';
+export type TabType = 'dashboard' | 'library' | 'import' | 'analytics' | 'backup' | 'admin' | 'settings' | 'license';
 
 interface NavigationProps {
   activeTab: TabType;
