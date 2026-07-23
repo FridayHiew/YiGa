@@ -243,7 +243,7 @@ export const SAMPLE_COLLECTIONS: KnowledgeCollection[] = [
         ],
         correctIndex: 0,
         explanation: 'The Principle of Least Privilege (PoLP) ensures that users, processes, and systems only have the access privileges absolutely necessary to complete their task, reducing the blast radius of any credential compromise.',
-        image: '/src/assets/images/cloud_security_diagram_1784766109187.jpg',
+        image: '../assets/images/cloud_security_diagram_1784766109187.jpg',
         sourceReference: 'NIST Special Publication 800-207 (Zero Trust Architecture), Section 2.1'
       }
     ]
@@ -272,7 +272,7 @@ export const SAMPLE_COLLECTIONS: KnowledgeCollection[] = [
         ],
         correctIndex: 0,
         explanation: 'Adaptive Rate Limiting and risk profiling analyze incoming behavioral patterns and block malicious automated traffic dynamically while avoiding service disruption for legitimate clients.',
-        image: '/assets/images/api_firewall_diagram_1784766427739.jpg',
+        image: '../assets/images/api_firewall_diagram_1784766427739.jpg',
         sourceReference: 'OWASP API Security Top 10 - API4:2023 Lack of Resources & Rate Limiting'
       },
       {
